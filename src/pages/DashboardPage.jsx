@@ -141,7 +141,7 @@ function DashboardPage() {
           localStorage.setItem(NOTIFICATIONS_UPDATED_KEY, String(Date.now()))
         }
       } catch {
-                                                             
+        // Keep dashboard usable even if trigger check fails.
       }
     }
 
@@ -255,7 +255,7 @@ function DashboardPage() {
     }
   }, [])
 
-                                   
+  // Get all modules from all paths
   const visibleNotifications = notifications.filter(
     (notification) => !dismissedNotificationIds.includes(notification.id),
   )
@@ -273,7 +273,7 @@ function DashboardPage() {
     }))
   )
 
-                      
+  // Get latest module
   const latestModule = allModules[allModules.length - 1] || null
 
   const labProgressSummary = getLabProgressSummary(getRoomsData())
@@ -370,7 +370,7 @@ function DashboardPage() {
         : parseInt(localStorage.getItem('userProgress') || '65'),
   }
 
-                                      
+  // Show loading while fetching paths
   if (isLoading) {
     return (
       <main className="mt-20 p-8 lg:p-12 flex items-center justify-center min-h-screen">

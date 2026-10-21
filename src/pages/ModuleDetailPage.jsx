@@ -59,7 +59,7 @@ function ModuleDetailPage() {
     module?.content?.markdown || module?.markdown || module?.description || ''
   const moduleOverviewMarkup = renderRichContent(moduleOverviewSource, module?.content?.html || module?.html)
 
-                                      
+  // Show loading while fetching paths
   if (isLoading) {
     return (
       <main className="pt-20 px-8 pb-12 min-h-screen flex items-center justify-center">
@@ -72,7 +72,7 @@ function ModuleDetailPage() {
     )
   }
 
-                                                       
+  // Redirect if path or module not found after loading
   if (!path || !module) {
     return <Navigate to="/learn/paths" replace />
   }
@@ -80,7 +80,7 @@ function ModuleDetailPage() {
   return (
     <main className="pt-32 px-8 pb-12">
       <section className="mb-12">
-        {                           }
+        {/* Breadcrumb and header */}
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => navigate(`/learn/path/${pathId}`)}
@@ -92,7 +92,7 @@ function ModuleDetailPage() {
           </button>
         </div>
 
-        {                  }
+        {/* Module Image */}
         {module.imageData && (
           <div className="mb-8 rounded-lg overflow-hidden">
             <img 

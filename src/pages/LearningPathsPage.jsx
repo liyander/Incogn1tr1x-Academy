@@ -57,7 +57,7 @@ function LearningPathsPage({ allowRedTeamPath = true }) {
     const loadPaths = async () => {
       setIsLoading(true)
       try {
-                                          
+        // Always fetch fresh from backend
         console.log('🌐 Fetching career paths from backend...')
         const [pathsResponse, roomsResponse] = await Promise.all([
           apiFetch('/career-paths'),
@@ -71,11 +71,11 @@ function LearningPathsPage({ allowRedTeamPath = true }) {
           const fetchedRooms = Array.isArray(roomsResponse) ? roomsResponse : []
           console.log('📊 Setting career paths. Count:', paths.length)
           
-                                                   
+          // Hydrate localStorage with backend data
           hydrateCareerPathsData(paths)
           hydrateRoomsData(fetchedRooms)
           
-                                               
+          // Directly set state with fresh data
           setCareerPaths(paths)
           setRooms(fetchedRooms)
           console.log('✅ Career paths loaded successfully')
@@ -83,7 +83,7 @@ function LearningPathsPage({ allowRedTeamPath = true }) {
       } catch (error) {
         console.error('❌ Failed to load career paths:', error)
         if (!cancelled) {
-                                                 
+          // Fallback to localStorage or defaults
           const fallback = getCareerPathsData()
           console.log('⚠️ Using fallback data. Count:', fallback.length)
           setCareerPaths(fallback)

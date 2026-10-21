@@ -418,7 +418,7 @@ function AdminCareerPathEditorPage() {
           ) : null}
         </header>
 
-        {                    }
+        {/* Tab Navigation */}
         <div className="flex gap-0 mb-8 border-b border-outline-variant/30 overflow-x-auto">
           {['basic', 'modules', 'resources'].map((tab) => (
             <button
@@ -436,7 +436,7 @@ function AdminCareerPathEditorPage() {
           ))}
         </div>
 
-        {                           }
+        {/* Basic Information Tab */}
         {activeTab === 'basic' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <section className="bg-surface-container-lowest p-8">
@@ -647,10 +647,10 @@ function AdminCareerPathEditorPage() {
           </div>
         )}
 
-        {                 }
+        {/* Modules Tab */}
         {activeTab === 'modules' && (
           <div className="space-y-8">
-            {                    }
+            {/* Add New Module */}
             <section className="bg-surface-container-lowest p-8">
               <h2 className="font-headline text-xl font-bold uppercase tracking-tight mb-6">
                 Add New Module
@@ -710,7 +710,7 @@ function AdminCareerPathEditorPage() {
               </div>
             </section>
 
-            {                      }
+            {/* Existing Modules */}
             <section className="bg-surface-container-lowest p-8">
               <h2 className="font-headline text-xl font-bold uppercase tracking-tight mb-6">
                 Current Modules ({formData.modules?.length || 0})
@@ -792,7 +792,7 @@ function AdminCareerPathEditorPage() {
                         </div>
                       )}
 
-                      {                     }
+                      {/* Room Assignment */}
                       <div className="mt-6 pt-6 border-t border-outline-variant/20">
                         <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">
                           Assigned Rooms
@@ -890,10 +890,10 @@ function AdminCareerPathEditorPage() {
           </div>
         )}
 
-        {                   }
+        {/* Resources Tab */}
         {activeTab === 'resources' && (
           <div className="space-y-8">
-            {                      }
+            {/* Add New Resource */}
             <section className="bg-surface-container-lowest p-8">
               <h2 className="font-headline text-xl font-bold uppercase tracking-tight mb-6">
                 Add New Resource
@@ -935,7 +935,7 @@ function AdminCareerPathEditorPage() {
               </div>
             </section>
 
-            {                        }
+            {/* Existing Resources */}
             <section className="bg-surface-container-lowest p-8">
               <h2 className="font-headline text-xl font-bold uppercase tracking-tight mb-6">
                 Current Resources ({formData.resources?.length || 0})

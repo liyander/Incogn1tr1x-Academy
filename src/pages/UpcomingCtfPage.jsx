@@ -74,7 +74,7 @@ function UpcomingCtfPage() {
           localStorage.setItem(NOTIFICATIONS_UPDATED_KEY, String(Date.now()))
         }
       } catch {
-                                                         
+        // Intentionally non-blocking for page rendering.
       }
     }
 

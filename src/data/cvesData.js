@@ -1,5 +1,4 @@
 import { apiFetch } from '../services/api'
-import { catalogStorageKey } from './storageScope'
 
 export const CVES_STORAGE_KEY = 'cvesData'
 export const CVES_UPDATED_EVENT = 'cvesDataUpdated'
@@ -20,16 +19,10 @@ export const defaultCves = [
 ]
 
 let fallbackMemoryCves = null;
-let activeCvesStorageKey = ''
 
 export function getCvesData() {
-  const storageKey = catalogStorageKey(CVES_STORAGE_KEY)
-  if (activeCvesStorageKey !== storageKey) {
-    activeCvesStorageKey = storageKey
-    fallbackMemoryCves = null
-  }
   if (fallbackMemoryCves) return fallbackMemoryCves;
-  const stored = localStorage.getItem(storageKey)
+  const stored = localStorage.getItem(CVES_STORAGE_KEY)
   if (stored) {
     try {
       const parsed = JSON.parse(stored)
@@ -57,7 +50,7 @@ export function subscribeCvesData(listener) {
   }
   const onDataUpdate = () => listener()
   const onStorage = (event) => {
-    if (event.key === catalogStorageKey(CVES_STORAGE_KEY)) {
+    if (event.key === CVES_STORAGE_KEY) {
       listener()
     }
   }
@@ -70,10 +63,9 @@ export function subscribeCvesData(listener) {
 }
 
 export function setCvesData(cves) {
-  activeCvesStorageKey = catalogStorageKey(CVES_STORAGE_KEY)
   fallbackMemoryCves = cves;
   try {
-    localStorage.setItem(activeCvesStorageKey, JSON.stringify(cves))
+    localStorage.setItem(CVES_STORAGE_KEY, JSON.stringify(cves))
   } catch (error) {
     console.warn('localStorage quota exceeded for cvesData. Retaining in memory only.', error)
   }
@@ -89,7 +81,7 @@ export function addCve(cve) {
   const cves = getCvesData()
   const newCve = {
     ...cve,
-    id: `local-${Date.now()}`                                         
+    id: `local-${Date.now()}` // Temporary until backend syncs real ID
   }
   cves.unshift(newCve)
   setCvesData(cves)
@@ -98,7 +90,7 @@ export function addCve(cve) {
     method: 'POST',
     body: JSON.stringify(cve)
   }).then(saved => {
-                                                                            
+    // Replace temp local ID if needed, or simply let the next fetch pull it
     const list = getCvesData()
     const index = list.findIndex(c => c.id === newCve.id)
     if (index !== -1) {
@@ -118,7 +110,7 @@ export function updateCve(id, updates) {
     cves[index] = { ...cves[index], ...updates, updated_at: new Date().toISOString() }
     setCvesData(cves)
     
-                                                    
+    // If it's not a local temporary ID, push to API
     if (!String(cves[index].id).startsWith('local-')) {
       void apiFetch(`/cves/${cves[index].id}`, {
         method: 'PUT',

@@ -99,7 +99,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-                                                                    
+/* Keep legacy light-hover utility classes readable in dark mode. */
 html.dark .hover\:bg-white:hover {
   background-color: var(--color-surface-container-high) !important;
 }

@@ -24,13 +24,13 @@ export function buildCertificateHtml(certificate, pathTitle, artworkData) {
     certificate?.certificateId || 'CERT-000000'
   ).trim()
 
-                                                                                   
-                                                                                        
+  // Always generate a verification URL that points to the current frontend origin.
+  // This prevents links from pointing to the backend (which can cause login redirects).
   const verificationUrl = `${window.location.origin}/verify-certificate/${encodeURIComponent(certificateId)}`
   const certificateImage = artworkData || certificateTemplateUrl
 
-                               
-                                                                               
+  // ===== NEW DATE LOGIC =====
+  // Uses the issue date if available, otherwise falls back to the current date
   const dateObj = certificate?.issuedAt ? new Date(certificate.issuedAt) : new Date()
   const formattedDate = dateObj.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -83,7 +83,7 @@ export function buildCertificateHtml(certificate, pathTitle, artworkData) {
         z-index: 2;
       }
 
-                                              
+      /* ===== DYNAMIC TEXT ALIGNMENT ===== */
 
       .name-field {
         position: absolute;
@@ -149,11 +149,11 @@ export function buildCertificateHtml(certificate, pathTitle, artworkData) {
         text-decoration: none;
       }
 
-                                          
+      /* ===== NEW DATE ALIGNMENT ===== */
       .date-field {
         position: absolute;
-        left: 15%;                                                           
-        bottom: 10.4%;                                                          
+        left: 15%; /* NUDGE THIS to align horizontally with your DATE line */
+        bottom: 10.4%; /* NUDGE THIS to align vertically above your DATE line */
         font-size: 21px;
         color: #e2e2e2;
         z-index: 3;
@@ -189,7 +189,7 @@ export function buildCertificateHtml(certificate, pathTitle, artworkData) {
           </a>
         </div>
 
-                                          
+        <!-- NEW DATE FIELD ADDED HERE -->
         <div class="date-field">
           ${formattedDate}
         </div>

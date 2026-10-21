@@ -28,7 +28,7 @@ function AdminLabResearchPlayerPage() {
 
   useEffect(() => {
     void loadDetail()
-                                                           
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, userId])
 
   const handleReset = async (scope) => {

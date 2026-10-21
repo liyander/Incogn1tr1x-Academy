@@ -399,7 +399,7 @@ function ProfilePage() {
           return
         }
       } catch {
-                                                              
+        // Ignore unreadable cache and fetch a fresh analysis.
       }
 
       setIsLoadingAnalysis(true)

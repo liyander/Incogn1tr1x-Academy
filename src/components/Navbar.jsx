@@ -30,7 +30,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
         : 'text-on-surface-variant hover:text-on-surface'
     }`
 
-                                                    
+  // Fetch notifications on mount and set up polling
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -66,7 +66,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
 
     syncNotifications()
 
-                                                      
+    // Keep fallback polling for cross-device updates.
     const interval = window.setInterval(syncNotifications, 5000)
     window.addEventListener(NOTIFICATIONS_UPDATED_EVENT, handleNotificationsUpdated)
     window.addEventListener('storage', handleStorage)
@@ -105,7 +105,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
     }
   }, [])
 
-                                          
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -135,7 +135,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
 
     const results = []
 
-                             
+    // Search in career paths
     careerPaths.forEach((path) => {
       if (searchableValue(path.title).includes(query) || searchableValue(path.description).includes(query)) {
         results.push({
@@ -147,7 +147,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
         })
       }
 
-                          
+      // Search in modules
       if (path.modules) {
         path.modules.forEach((module) => {
           if (searchableValue(module.title).includes(query) || searchableValue(module.description).includes(query)) {
@@ -165,7 +165,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
       }
     })
 
-                      
+    // Search in rooms
     rooms.forEach((room) => {
       if (searchableValue(room.title).includes(query) || searchableValue(room.description).includes(query)) {
         results.push({
@@ -238,7 +238,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
           </NavLink>
           <a
             className="text-on-surface-variant hover:text-on-surface transition-colors duration-200"
-            href="/"
+            href="http://110.172.151.108"
           >
             CTF Arena
           </a>
@@ -259,7 +259,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
               />
             </div>
 
-            {                             }
+            {/* Search Results Dropdown */}
             {showResults && searchResults.length > 0 && (
               <div className="absolute top-full mt-3 w-96 bg-surface-container-lowest border border-primary/20 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-sm">
                 <div className="px-3 py-2 border-b border-primary/10 bg-primary/5">
@@ -340,7 +340,7 @@ function Navbar({ config, isSidebarOpen, onLogout, onToggleSidebar }) {
                 )}
               </button>
 
-              {                            }
+              {/* Notifications Dropdown */}
               {showNotifications && (
                 <div className="absolute top-full mt-3 right-0 w-96 bg-surface-container-lowest border border-primary/20 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-sm">
                   <div className="px-4 py-3 border-b border-primary/10 bg-primary/5">

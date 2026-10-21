@@ -141,7 +141,7 @@ function AdminDockerConfigPage() {
               <input
                 className="mt-2 w-full bg-surface-container-highest border-l-2 border-l-primary py-3 px-4 outline-none"
                 onChange={(event) => updateConfig('hostname', event.target.value)}
-                placeholder="tcp://192.0.2.10:2375 or unix:///var/run/docker.sock"
+                placeholder="tcp://110.172.151.108:2375 or unix:///var/run/docker.sock"
                 type="text"
                 value={config.hostname}
               />
@@ -157,7 +157,7 @@ function AdminDockerConfigPage() {
               <input
                 className="mt-2 w-full bg-surface-container-highest border-l-2 border-l-primary py-3 px-4 outline-none"
                 onChange={(event) => updateConfig('displayHost', event.target.value)}
-                placeholder="IP or DNS shown to players, e.g. 192.0.2.10"
+                placeholder="IP or DNS shown to players, e.g. 110.172.151.108"
                 type="text"
                 value={config.displayHost}
               />

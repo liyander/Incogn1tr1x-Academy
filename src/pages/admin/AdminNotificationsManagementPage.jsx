@@ -24,7 +24,7 @@ function AdminNotificationsManagementPage() {
     localStorage.setItem(NOTIFICATIONS_UPDATED_KEY, String(Date.now()))
   }
 
-                        
+  // Fetch notifications
   const fetchNotifications = async () => {
     try {
       setLoading(true)
@@ -42,7 +42,7 @@ function AdminNotificationsManagementPage() {
     fetchNotifications()
   }, [])
 
-                             
+  // Handle form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -51,7 +51,7 @@ function AdminNotificationsManagementPage() {
     }))
   }
 
-                           
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -84,7 +84,7 @@ function AdminNotificationsManagementPage() {
     }
   }
 
-                
+  // Handle edit
   const handleEdit = (notification) => {
     setFormData({
       title: notification.title,
@@ -95,7 +95,7 @@ function AdminNotificationsManagementPage() {
     setShowForm(true)
   }
 
-                  
+  // Handle delete
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this notification?')) return
 
@@ -110,7 +110,7 @@ function AdminNotificationsManagementPage() {
     }
   }
 
-                                
+  // Handle toggle active status
   const handleToggleActive = async (id, currentStatus) => {
     try {
       await apiFetch(`/notifications/${id}`, {
@@ -149,7 +149,7 @@ function AdminNotificationsManagementPage() {
           </p>
         </header>
 
-        {                            }
+        {/* Error/Success Messages */}
         {error && (
           <div className="mb-6 bg-error/10 border-l-4 border-error p-4 rounded">
             <p className="text-error font-headline text-sm font-bold">{error}</p>
@@ -161,7 +161,7 @@ function AdminNotificationsManagementPage() {
           </div>
         )}
 
-        {                      }
+        {/* Create/Edit Form */}
         <div className="bg-surface-container-lowest border-l-4 border-primary p-8 mb-8">
           <button
             type="button"
@@ -232,7 +232,7 @@ function AdminNotificationsManagementPage() {
           )}
         </div>
 
-        {                        }
+        {/* Notifications List */}
         <div>
           <h2 className="font-headline text-2xl font-bold uppercase tracking-tight mb-6 text-primary flex items-center gap-2">
             <span className="material-symbols-outlined">notifications_active</span>

@@ -88,14 +88,14 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
           </div>
         </header>
 
-        {                                }
+        {/* Content Management Section */}
         <section className="mt-8">
           <h2 className="font-headline text-2xl font-bold uppercase tracking-tight mb-6 text-primary flex items-center gap-2">
             <span className="material-symbols-outlined">manage_accounts</span>
             Content Management
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {                        }
+            {/* Experimental Rooms */}
             <div className="bg-surface-container-lowest border-l-4 border-primary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/rooms">
                 <div className="flex items-start justify-between mb-4">
@@ -148,7 +148,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {                             }
+            {/* CVE Database Management */}
             <div className="bg-surface-container-lowest border-l-4 border-error p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/cves">
                 <div className="flex items-start justify-between mb-4">
@@ -175,7 +175,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {                  }
+            {/* Career Paths */}
             <div className="bg-surface-container-lowest border-l-4 border-secondary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/career-paths">
                 <div className="flex items-start justify-between mb-4">
@@ -228,7 +228,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {                   }
+            {/* Notifications */}
             <div className="bg-surface-container-lowest border-l-4 border-secondary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/notifications">
                 <div className="flex items-start justify-between mb-4">
@@ -255,7 +255,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {                   }
+            {/* Registrations */}
             <div className="bg-surface-container-lowest border-l-4 border-secondary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/registrations">
                 <div className="flex items-start justify-between mb-4">
@@ -282,7 +282,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {                  }
+            {/* Lab Research */}
             <div className="bg-surface-container-lowest border-l-4 border-secondary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/lab-research">
                 <div className="flex items-start justify-between mb-4">
@@ -309,7 +309,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {                  }
+            {/* Upcoming CTF */}
             <div className="bg-surface-container-lowest border-l-4 border-primary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/upcoming-ctf">
                 <div className="flex items-start justify-between mb-4">
@@ -336,7 +336,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {                   }
+            {/* Docker Config */}
             <div className="bg-surface-container-lowest border-l-4 border-primary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/docker">
                 <div className="flex items-start justify-between mb-4">
@@ -441,7 +441,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
               </a>
             </div>
 
-            {              }
+            {/* Admin AI */}
             <div className="bg-surface-container-lowest border-l-4 border-secondary p-6 hover:bg-surface-container-high transition-all cursor-pointer">
               <a className="block" href="/admin/ai-control">
                 <div className="flex items-start justify-between mb-4">
@@ -522,7 +522,7 @@ function AdminPanelPage({ config, onConfigChange, onLogout, username }) {
           </div>
         </section>
 
-        {                              }
+        {/* Platform Access Controls */}
         <section className="mt-8">
           <h2 className="font-headline text-2xl font-bold uppercase tracking-tight mb-6 text-primary flex items-center gap-2">
             <span className="material-symbols-outlined">settings</span>

@@ -1,5 +1,4 @@
 import { apiFetch } from '../services/api'
-import { catalogStorageKey } from './storageScope'
 
 const CAREER_PATHS_STORAGE_KEY = 'careerPathsData'
 const CAREER_PATHS_UPDATED_EVENT = 'incognitrix:career-paths-updated'
@@ -10,7 +9,7 @@ function emitCareerPathsUpdated() {
   }
 }
 
-                            
+// Career paths data storage
 function normalizeCareerPath(path) {
   return {
     ...path,
@@ -117,16 +116,10 @@ export const defaultCareerPaths = [
 ]
 
 let fallbackMemoryCareerPaths = null;
-let activeCareerPathsStorageKey = ''
 
 export function getCareerPathsData() {
-  const storageKey = catalogStorageKey(CAREER_PATHS_STORAGE_KEY)
-  if (activeCareerPathsStorageKey !== storageKey) {
-    activeCareerPathsStorageKey = storageKey
-    fallbackMemoryCareerPaths = null
-  }
   if (fallbackMemoryCareerPaths) return fallbackMemoryCareerPaths;
-  const stored = localStorage.getItem(storageKey)
+  const stored = localStorage.getItem(CAREER_PATHS_STORAGE_KEY)
   if (stored) {
     try {
       const parsed = JSON.parse(stored).map(normalizeCareerPath)
@@ -143,10 +136,9 @@ export function getCareerPathsData() {
 }
 
 export function setCareerPathsData(paths) {
-  activeCareerPathsStorageKey = catalogStorageKey(CAREER_PATHS_STORAGE_KEY)
   fallbackMemoryCareerPaths = paths;
   try {
-    localStorage.setItem(activeCareerPathsStorageKey, JSON.stringify(paths))
+    localStorage.setItem(CAREER_PATHS_STORAGE_KEY, JSON.stringify(paths))
   } catch (error) {
     console.warn('localStorage quota exceeded for careerPathsData. Retaining in memory only.', error)
   }
@@ -154,10 +146,9 @@ export function setCareerPathsData(paths) {
 }
 
 export function hydrateCareerPathsData(paths) {
-  activeCareerPathsStorageKey = catalogStorageKey(CAREER_PATHS_STORAGE_KEY)
   fallbackMemoryCareerPaths = paths.map(normalizeCareerPath);
   try {
-    localStorage.setItem(activeCareerPathsStorageKey, JSON.stringify(fallbackMemoryCareerPaths))
+    localStorage.setItem(CAREER_PATHS_STORAGE_KEY, JSON.stringify(fallbackMemoryCareerPaths))
   } catch (error) {
     console.warn('localStorage quota exceeded during career paths hydration. Retaining in memory only.', error)
   }
@@ -171,7 +162,7 @@ export function subscribeCareerPathsData(listener) {
 
   const onDataUpdate = () => listener()
   const onStorage = (event) => {
-    if (event.key === catalogStorageKey(CAREER_PATHS_STORAGE_KEY)) {
+    if (event.key === CAREER_PATHS_STORAGE_KEY) {
       listener()
     }
   }

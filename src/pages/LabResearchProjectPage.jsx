@@ -45,14 +45,14 @@ function LabResearchProjectPage() {
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState(TABS.research)
 
-               
+  // Quiz state
   const [attempt, setAttempt] = useState(null)
   const [quizLoading, setQuizLoading] = useState(false)
   const [quizError, setQuizError] = useState('')
   const [answers, setAnswers] = useState({})
   const [submittingQuestionId, setSubmittingQuestionId] = useState(null)
 
-                   
+  // Code lab state
   const [challenge, setChallenge] = useState(null)
   const [codeLoading, setCodeLoading] = useState(false)
   const [codeError, setCodeError] = useState('')
@@ -81,8 +81,8 @@ function LabResearchProjectPage() {
           codeInitializedRef.current = true
         }
       }
-                                                                             
-                                                                                   
+      // Active attempts are never resumed: the assessment is proctored, so a
+      // refresh or crash forfeits the attempt and the next one gets new questions.
       return data
     } catch (err) {
       setError(err.message || 'Failed to load research project')
@@ -94,11 +94,11 @@ function LabResearchProjectPage() {
 
   useEffect(() => {
     void loadProject()
-                                                           
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId])
 
-                                                                            
-                                           
+  // Proctoring state lives in refs so the global event listeners always see
+  // the current values without re-binding.
   const proctorRef = useRef({ active: false, violated: false, attemptId: null })
 
   const exitFullscreen = () => {
@@ -131,8 +131,8 @@ function LabResearchProjectPage() {
     const onFullscreen = () => {
       if (!document.fullscreenElement) void handleViolation('fullscreen-exit')
     }
-                                                                
-                                                                     
+    // Alt-Tab to another application keeps the page visible, so
+    // visibilitychange never fires — window blur is what catches it.
     const onBlur = () => {
       void handleViolation('tab-switch')
     }
@@ -148,12 +148,12 @@ function LabResearchProjectPage() {
         document.exitFullscreen().catch(() => {})
       }
     }
-                                                           
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleStartQuiz = async () => {
     setQuizError('')
-                                                                              
+    // Fullscreen must be requested inside the click gesture and is mandatory.
     if (!document.fullscreenElement) {
       try {
         await document.documentElement.requestFullscreen({ navigationUI: 'hide' })
@@ -227,17 +227,25 @@ function LabResearchProjectPage() {
 
   const isUiChallenge = challenge?.kind === 'ui'
 
-                                                                             
-                                                                            
-  const renderPreview = async () => {
-    setPreview(null)
-    throw new Error('Preview rendering is unavailable in this build.')
-  }
+  // Renders the player's HTML into the sandboxed preview iframe and resolves
+  // once it has loaded (the changing key forces a fresh document each run).
+  const renderPreview = (html) =>
+    new Promise((resolve) => {
+      previewLoadResolveRef.current = resolve
+      setPreview({ html, nonce: Date.now() })
+      // Safety net in case the load event never fires.
+      setTimeout(() => {
+        if (previewLoadResolveRef.current === resolve) {
+          previewLoadResolveRef.current = null
+          resolve()
+        }
+      }, 3000)
+    })
 
   const handlePreviewLoad = () => {
     const resolve = previewLoadResolveRef.current
     previewLoadResolveRef.current = null
-                                                                 
+    // Give inline scripts a moment to run before checks execute.
     if (resolve) setTimeout(resolve, 200)
   }
 
@@ -252,8 +260,8 @@ function LabResearchProjectPage() {
     await renderPreview(code)
     setRunStatus('Verifying UI requirements...')
     const run = runUiChecksInFrame(previewFrameRef.current, challenge.testCases)
-                                                                          
-                                              
+    // Capture eagerly while the preview is fresh; submit reuses this if a
+    // fresh capture fails at submission time.
     try {
       lastScreenshotRef.current = await captureFrameScreenshot(previewFrameRef.current)
     } catch (screenshotError) {

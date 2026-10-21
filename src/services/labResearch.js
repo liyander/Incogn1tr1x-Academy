@@ -1,6 +1,6 @@
 import { apiFetch } from './api'
 
-        
+// Admin
 export function fetchAdminLabProjects() {
   return apiFetch('/lab-research/admin/projects')
 }
@@ -29,7 +29,7 @@ export function fetchLabProjectCompletions(projectId) {
   return apiFetch(`/lab-research/admin/projects/${projectId}/completions`)
 }
 
-         
+// Player
 export function fetchLabProjects() {
   return apiFetch('/lab-research/projects')
 }

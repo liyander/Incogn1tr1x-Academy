@@ -1,6 +1,3 @@
-import { apiFetch } from '../services/api'
-import { catalogStorageKey } from './storageScope'
-
 export const CATEGORIES_STORAGE_KEY = 'incognitrix_room_categories_v1'
 export const CATEGORIES_UPDATED_EVENT = 'incognitrix:room-categories-updated'
 
@@ -28,7 +25,7 @@ function normalizeCategory(value) {
 
 function readStoredCategories() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(catalogStorageKey(CATEGORIES_STORAGE_KEY)) || '[]')
+    const parsed = JSON.parse(localStorage.getItem(CATEGORIES_STORAGE_KEY) || '[]')
     return Array.isArray(parsed) ? parsed.map(normalizeCategory).filter(Boolean) : []
   } catch {
     return []
@@ -39,7 +36,7 @@ function writeCategories(categories) {
   const uniqueCategories = [...new Set(categories.map(normalizeCategory).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b))
 
-  localStorage.setItem(catalogStorageKey(CATEGORIES_STORAGE_KEY), JSON.stringify(uniqueCategories))
+  localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(uniqueCategories))
   window.dispatchEvent(new Event(CATEGORIES_UPDATED_EVENT))
   return uniqueCategories
 }
@@ -110,3 +107,4 @@ export async function removeRoomCategory(category) {
 
   return deleteRoomCategory(target)
 }
+import { apiFetch } from '../services/api'

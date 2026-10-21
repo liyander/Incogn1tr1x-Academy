@@ -39,33 +39,14 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 app.options('*', cors(corsOptions))
+app.use('/api/rooms/:id/docker/proxy', express.raw({ type: '*/*', limit: '50mb' }))
 app.use(express.json({ limit: '50mb' }))
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' })
 })
 
-app.use('/api/auth', (req, res, next) => {
-  if (req.path === '/register') {
-    return res.status(503).json({ message: 'Registration is a placeholder in this build.' })
-  }
-  next()
-}, authRoutes)
-
-                                                                         
-                                                                     
-app.use('/api', (req, res, next) => {
-  if (/\/docker(?:-[^/]*)?(?:\/|$)/i.test(req.path)) {
-    return res.status(410).json({ message: 'Docker integration has been removed.' })
-  }
-
-  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-    return res.status(503).json({ message: 'This feature is a placeholder in this build.' })
-  }
-
-  next()
-})
-
+app.use('/api/auth', authRoutes)
 app.use('/api/rooms', roomRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/career-paths', careerPathRoutes)

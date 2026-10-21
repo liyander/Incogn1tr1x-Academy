@@ -417,7 +417,7 @@ function AdminRoomEditorPage() {
           ) : null}
         </header>
 
-        {                    }
+        {/* Tab Navigation */}
         <div className="flex gap-0 mb-8 border-b border-outline-variant/30">
           {['basic', 'content', 'questions'].map((tab) => (
             <button
@@ -435,7 +435,7 @@ function AdminRoomEditorPage() {
           ))}
         </div>
 
-        {                           }
+        {/* Basic Information Tab */}
         {activeTab === 'basic' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <section className="bg-surface-container-lowest p-8">
@@ -651,7 +651,7 @@ function AdminRoomEditorPage() {
           </div>
         )}
 
-        {                        }
+        {/* Content Editor Tab */}
         {activeTab === 'content' && (
           <div className="space-y-8">
             <section className="bg-surface-container-lowest p-8">

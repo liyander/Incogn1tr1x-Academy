@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
 import { getAuthSession, logoutUser } from './auth'
@@ -6,6 +6,7 @@ import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import CyberChatbot from './components/CyberChatbot'
 import { loadPlatformConfig, savePlatformConfig } from './platformConfig'
+import { apiFetch } from './services/api'
 import { syncFrontendStateFromBackend } from './services/backendSync'
 import AdminPanelPage from './pages/AdminPanelPage'
 import AdminRoomsManagementPage from './pages/admin/AdminRoomsManagementPage'
@@ -53,6 +54,27 @@ import LabResearchPage from './pages/LabResearchPage'
 import LabResearchProjectPage from './pages/LabResearchProjectPage'
 import { getSavedTheme, toggleTheme as toggleThemeSetting } from './services/theme'
 
+function ControlledOutageScreen() {
+  return (
+    <main className="min-h-screen bg-white text-slate-900 flex items-center justify-center px-6 py-10">
+      <section className="w-full max-w-xl rounded border border-slate-200 bg-white p-8 shadow-sm">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Something went wrong.
+        </h1>
+        <p className="mt-4 text-base leading-7 text-slate-600">
+          The application encountered an unexpected error. Try refreshing the page.
+        </p>
+        <pre className="mt-6 max-h-56 overflow-auto rounded bg-slate-950 p-4 text-xs leading-6 text-slate-100">
+          {`Error: Minified React error #418; visit https://react.dev/errors/418 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at renderRootSync (react-dom_client.js:8309:13)
+    at performWorkOnRoot (react-dom_client.js:7957:19)
+    at performWorkOnRootViaSchedulerTask (react-dom_client.js:9059:9)`}
+        </pre>
+      </section>
+    </main>
+  )
+}
+
 function firstEnabledRoute(config) {
   if (config.routes.dashboard) return '/'
   if (config.routes.learningPaths) return '/learn/paths'
@@ -69,6 +91,7 @@ function App() {
   const [isBootstrapping, setIsBootstrapping] = useState(true)
   const [syncTick, setSyncTick] = useState(0)
   const [theme, setTheme] = useState(getSavedTheme)
+  const platformConfigSaveRef = useRef({ inFlight: false, version: 0 })
   const location = useLocation()
   const isPublicVerificationRoute = location.pathname.startsWith('/verify-certificate')
 
@@ -148,7 +171,77 @@ function App() {
     }
   }, [authSession])
 
-  const updatePlatformConfig = () => undefined
+  useEffect(() => {
+    if (!authSession?.token) {
+      return undefined
+    }
+
+    let cancelled = false
+    const syncNow = async () => {
+      if (platformConfigSaveRef.current.inFlight) {
+        return
+      }
+
+      const syncVersion = platformConfigSaveRef.current.version
+      try {
+        const syncResult = await syncFrontendStateFromBackend({ persistPlatformConfig: false })
+        if (platformConfigSaveRef.current.inFlight || platformConfigSaveRef.current.version !== syncVersion) {
+          return
+        }
+
+        if (!cancelled) {
+          const savedConfig = savePlatformConfig(syncResult.platformConfig)
+          setPlatformConfig(savedConfig)
+          setSyncTick((value) => value + 1)
+        }
+      } catch (error) {
+        if (isAuthError(error)) {
+          handleSessionExpired()
+          return
+        }
+        console.error('Background sync failed:', error)
+      }
+    }
+
+    const intervalId = window.setInterval(syncNow, 8000)
+    void syncNow()
+    return () => {
+      cancelled = true
+      window.clearInterval(intervalId)
+    }
+  }, [authSession?.token])
+
+  const updatePlatformConfig = (nextConfig) => {
+    const merged = savePlatformConfig(nextConfig)
+    const saveVersion = platformConfigSaveRef.current.version + 1
+    platformConfigSaveRef.current = { inFlight: true, version: saveVersion }
+    setPlatformConfig(merged)
+    void apiFetch('/platform-config', {
+      method: 'PUT',
+      body: JSON.stringify(merged),
+    })
+      .then((savedConfig) => {
+        if (platformConfigSaveRef.current.version !== saveVersion) {
+          return
+        }
+
+        const savedMerged = savePlatformConfig(savedConfig)
+        setPlatformConfig(savedMerged)
+        setSyncTick((value) => value + 1)
+      })
+      .catch((error) => {
+        if (isAuthError(error)) {
+          handleSessionExpired()
+          return
+        }
+        console.error('Failed to sync platform config:', error)
+      })
+      .finally(() => {
+        if (platformConfigSaveRef.current.version === saveVersion) {
+          platformConfigSaveRef.current = { inFlight: false, version: saveVersion }
+        }
+      })
+  }
 
   if (authSession && !authSession.token) {
     logoutUser()
@@ -169,6 +262,13 @@ function App() {
   }
 
   void syncTick
+
+  const controlledOutage = platformConfig.features?.controlledOutage
+  if (controlledOutage?.active) {
+    return (
+      <ControlledOutageScreen />
+    )
+  }
 
   if (isPublicVerificationRoute) {
     return (

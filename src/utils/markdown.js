@@ -74,7 +74,7 @@ function parseInlineMarkdown(text) {
   result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
   result = result.replace(/__([^_]+)__/g, '<strong>$1</strong>')
   result = result.replace(/\*([^*]+)\*/g, '<em>$1</em>')
-                                                          
+  // Avoid turning identifiers_like_this into italic text.
   result = result.replace(/(^|[^\w])_([^_]+)_([^\w]|$)/g, '$1<em>$2</em>$3')
 
   result = result.replace(/\uE000(\d+)\uE001/g, (_match, index) => {
@@ -118,7 +118,7 @@ function flushParagraph(lines, output) {
     return
   }
 
-                                                                            
+  // Treat a solitary single-backtick line as a block instead of inline code
   if (lines.length === 1) {
     const text = lines[0].trim()
     if (text.startsWith('`') && text.endsWith('`') && !text.startsWith('```')) {

@@ -1,35 +1,113 @@
-import { apiFetch } from './services/api'
+import { API_BASE_URL, apiFetch } from './services/api'
 
 const AUTH_KEY = 'incognitrix_auth_session'
-export const TEMP_USERS = []
+
+export const TEMP_USERS = [
+  {
+    username: 'operator01',
+    password: 'RedTeam@123',
+    role: 'operator',
+  },
+  {
+    username: 'admin01',
+    password: 'AdminControl@123',
+    role: 'admin',
+  },
+]
 
 export async function loginUser(username, password) {
+  const identifier = (username || '').trim()
   const response = await apiFetch('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ identifier: username, password }),
+    body: JSON.stringify({ identifier, password }),
   })
-  const session = { ...response.user, token: response.token, loggedInAt: Date.now() }
-  localStorage.setItem(AUTH_KEY, JSON.stringify(session))
+
+  const session = {
+    username: response.user.username,
+    email: response.user.email || '',
+    registrationNumber: response.user.registrationNumber || '',
+    role: response.user.role,
+    token: response.token,
+    loggedInAt: Date.now(),
+  }
+
+  try {
+    localStorage.setItem(AUTH_KEY, JSON.stringify(session))
+  } catch {
+    return null
+  }
+
   return session
 }
 
-export async function registerUser() {
-  throw new Error('Registration is unavailable in the local preview.')
+export async function registerUser({ registrationNumber, email, password }) {
+  const response = await apiFetch('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ registrationNumber, email, password }),
+  })
+
+  const session = {
+    username: response.user.username,
+    email: response.user.email || '',
+    registrationNumber: response.user.registrationNumber || '',
+    role: response.user.role,
+    token: response.token,
+    loggedInAt: Date.now(),
+  }
+
+  try {
+    localStorage.setItem(AUTH_KEY, JSON.stringify(session))
+  } catch {
+    return null
+  }
+
+  return session
 }
 
 export function logoutUser() {
-  localStorage.removeItem(AUTH_KEY)
-}
-
-export function getAuthSession() {
   try {
-    const session = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null')
-    return session?.username && session?.role ? session : null
+    const raw = localStorage.getItem(AUTH_KEY)
+    const token = raw ? JSON.parse(raw)?.token : ''
+    if (token && typeof fetch === 'function') {
+      void fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: '{}',
+        keepalive: true,
+      }).catch(() => {})
+    }
   } catch {
-    return null
+    // best-effort logout presence update
+  }
+
+  try {
+    localStorage.removeItem(AUTH_KEY)
+  } catch {
+    // no-op for environments where storage is unavailable
   }
 }
 
 export function isAuthenticatedUser() {
   return Boolean(getAuthSession())
+}
+
+export function getAuthSession() {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY)
+    if (!raw) {
+      return null
+    }
+
+    const parsed = JSON.parse(raw)
+    if (!parsed?.username || !parsed?.role) {
+      return null
+    }
+
+    return parsed
+  } catch {
+    return null
+  }
 }

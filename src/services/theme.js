@@ -7,7 +7,7 @@ export function getSavedTheme() {
       return saved
     }
   } catch {
-                             
+    // Ignore storage errors.
   }
 
   if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
@@ -25,7 +25,7 @@ export function applyTheme(theme) {
   try {
     localStorage.setItem(THEME_KEY, safeTheme)
   } catch {
-                             
+    // Ignore storage errors.
   }
 
   return safeTheme

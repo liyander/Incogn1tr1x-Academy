@@ -34,7 +34,7 @@ function AdminCveEditorPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-                           
+  // Basic validation rules
   const handleSave = () => {
     if (!formData.cve_id?.trim()) {
       setErrorMessage('CVE ID is required.')

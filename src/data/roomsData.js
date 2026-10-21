@@ -1,7 +1,6 @@
 import { apiFetch } from '../services/api'
-import { catalogStorageKey } from './storageScope'
 
-                                  
+// Rooms data storage with content
 function getToneByLevel(level) {
   if (level === 'Easy') {
     return { levelTone: 'text-emerald-600', dotTone: 'bg-emerald-500' }
@@ -207,16 +206,10 @@ Examine a captured memory dump to identify malicious processes.`,
 ]
 
 let fallbackMemoryRooms = null;
-let activeRoomsStorageKey = ''
 
 export function getRoomsData() {
-  const storageKey = catalogStorageKey('roomsData')
-  if (activeRoomsStorageKey !== storageKey) {
-    activeRoomsStorageKey = storageKey
-    fallbackMemoryRooms = null
-  }
   if (fallbackMemoryRooms) return fallbackMemoryRooms;
-  const stored = localStorage.getItem(storageKey)
+  const stored = localStorage.getItem('roomsData')
   if (stored) {
     try {
       const parsed = JSON.parse(stored).map(normalizeRoom)
@@ -233,20 +226,18 @@ export function getRoomsData() {
 }
 
 export function setRoomsData(rooms) {
-  activeRoomsStorageKey = catalogStorageKey('roomsData')
   fallbackMemoryRooms = rooms;
   try {
-    localStorage.setItem(activeRoomsStorageKey, JSON.stringify(rooms))
+    localStorage.setItem('roomsData', JSON.stringify(rooms))
   } catch (error) {
     console.warn('localStorage quota exceeded for roomsData. Retaining in memory only.', error)
   }
 }
 
 export function hydrateRoomsData(rooms) {
-  activeRoomsStorageKey = catalogStorageKey('roomsData')
   fallbackMemoryRooms = rooms.map(normalizeRoom);
   try {
-    localStorage.setItem(activeRoomsStorageKey, JSON.stringify(fallbackMemoryRooms))
+    localStorage.setItem('roomsData', JSON.stringify(fallbackMemoryRooms))
   } catch (error) {
     console.warn('localStorage quota exceeded during room hydration. Retaining in memory only.', error)
   }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { apiFetch } from '../../services/api'
+import { API_BASE_URL, apiFetch, getAuthToken } from '../../services/api'
 
 function formatDate(value) {
   if (!value) {
@@ -42,10 +42,38 @@ function AdminTopPlayerResumesPage() {
   }, [])
 
   const downloadResume = async (player) => {
-    if (!player?.resume) return
+    if (!player?.resume) {
+      return
+    }
+
     setDownloadingUserId(player.userId)
-    setError('Resume downloads are unavailable in the local preview.')
-    setDownloadingUserId(null)
+    setError('')
+
+    try {
+      const token = getAuthToken()
+      const response = await fetch(`${API_BASE_URL}/resumes/admin/${player.userId}/download`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => null)
+        throw new Error(body?.message || 'Resume download failed')
+      }
+
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = player.resume.fileName || `${player.username}-resume`
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      URL.revokeObjectURL(url)
+    } catch (downloadError) {
+      setError(downloadError?.message || 'Resume download failed')
+    } finally {
+      setDownloadingUserId(null)
+    }
   }
 
   return (

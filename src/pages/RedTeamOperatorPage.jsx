@@ -136,7 +136,7 @@ function RedTeamOperatorPage({ pathId: propPathId }) {
     }
   }
 
-                                      
+  // Show loading while fetching paths
   if (isLoading) {
     return (
       <main className="pt-20 px-8 pb-12 min-h-screen flex items-center justify-center">
@@ -149,7 +149,7 @@ function RedTeamOperatorPage({ pathId: propPathId }) {
     )
   }
 
-                                             
+  // Redirect if path not found after loading
   if (!path) {
     return <Navigate to="/learn/paths" replace />
   }

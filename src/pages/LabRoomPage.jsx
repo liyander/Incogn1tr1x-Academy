@@ -3,7 +3,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import { Terminal } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
 import { getRoomsData } from '../data/roomsData'
-import { apiFetch } from '../services/api'
+import { API_BASE_URL, apiFetch, getAuthToken } from '../services/api'
 import {
   getLabStatus,
   markLabCompleted,
@@ -77,10 +77,10 @@ function toYouTubeEmbedUrl(input) {
       }
     }
   } catch {
-                           
+    // Ignore invalid URLs.
   }
 
-                                                                          
+  // Fallback for raw IDs or unstructured strings containing a YouTube ID.
   const idMatch = raw.match(/([a-zA-Z0-9_-]{11})/)
   if (idMatch?.[1]) {
     return `https://www.youtube-nocookie.com/embed/${idMatch[1]}?rel=0`
@@ -544,12 +544,9 @@ function LabRoomPage() {
     }
     xtermRef.current = terminal
 
-    const socket = {
-      readyState: WebSocket.CLOSED,
-      addEventListener() {},
-      close() {},
-      send() {},
-    }
+    const token = encodeURIComponent(getAuthToken())
+    const wsBaseUrl = API_BASE_URL.replace(/^http/i, 'ws').replace(/\/api$/, '')
+    const socket = new WebSocket(`${wsBaseUrl}/api/rooms/${encodeURIComponent(roomId)}/docker/terminal/ws?token=${token}`)
     terminalSocket = socket
     terminalSocketRef.current = socket
 
